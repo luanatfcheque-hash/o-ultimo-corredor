@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>O Último Corredor — Taverna dos joguINS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--carvao:#171717;--verde:#A8D66D;--laranja:#FF7518;--creme:#F4EBDD;--roxo:#4B315E;
+--display:'Bungee','Impact','Arial Black',sans-serif;--corpo:'Lora',Georgia,'Times New Roman',serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;background:var(--carvao);color:var(--creme);font-family:var(--corpo);overflow-x:hidden}
+body{min-height:100vh;background:
+radial-gradient(circle at 85% 8%,rgba(75,49,94,.75),transparent 45%),
+repeating-linear-gradient(90deg,transparent 0 78px,rgba(244,235,221,.035) 78px 80px),var(--carvao)}
+#app{max-width:44rem;margin:0 auto;padding:1rem 1rem 3rem}
+:focus-visible{outline:3px solid var(--verde);outline-offset:3px}
+h1,h2{font-family:var(--display);font-weight:400;margin:0}
+button{font:inherit;cursor:pointer}
+.top{display:flex;align-items:center;gap:.75rem;min-height:2.75rem;margin-bottom:.75rem}
+.ghost{background:transparent;color:var(--creme);border:2px solid var(--roxo);border-radius:.5rem;padding:.5rem .9rem;min-height:2.75rem}
+.ghost:hover{border-color:var(--verde);color:var(--verde)}
+.prog{flex:1;display:flex;flex-direction:column;gap:.3rem;font-size:.8rem;color:#bdb3a3}
+.bar{height:6px;background:#2c2c2c;border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--verde);transition:width .4s}
+/* capa */
+.cover{text-align:center;padding:2rem 0 1rem}
+.kicker{display:inline-block;background:var(--roxo);color:var(--creme);font-family:var(--display);font-size:clamp(.8rem,3.2vw,1rem);padding:.45rem .9rem;border-radius:.3rem;transform:rotate(-2deg)}
+.sign{margin:1.4rem auto 1rem;background:var(--creme);color:var(--carvao);border:6px solid var(--laranja);border-radius:.6rem;padding:1.4rem 1rem;transform:rotate(1.2deg);box-shadow:8px 8px 0 var(--roxo);max-width:34rem}
+.sign h1{font-size:clamp(2.2rem,11vw,4.6rem);line-height:.95;color:var(--laranja);text-shadow:3px 3px 0 var(--carvao)}
+.sign p{margin:.9rem 0 0;font-style:italic;font-size:1.15rem}
+.edition{font-family:var(--display);color:var(--verde);font-size:1.05rem;margin:1.4rem 0 .4rem}
+.tag{max-width:30rem;margin:0 auto 1.4rem;line-height:1.6}
+.deco{font-size:2rem;letter-spacing:.5rem;margin:.5rem 0 1.4rem}
+.cta{background:var(--verde);color:var(--carvao);border:0;border-radius:.6rem;font-family:var(--display);font-size:1.5rem;padding:1rem 2.2rem;box-shadow:0 6px 0 #5f8a2c;min-height:3.5rem;width:100%;max-width:22rem}
+.cta:hover{background:#bfe885}.cta:active{transform:translateY(4px);box-shadow:0 2px 0 #5f8a2c}
+.dur{margin-top:1rem;font-size:.95rem;color:#bdb3a3}
+/* leitura */
+.page{background:var(--creme);color:var(--carvao);border-radius:.7rem;padding:1.4rem 1.2rem 1.6rem;border-top:8px solid var(--laranja);box-shadow:6px 6px 0 var(--roxo)}
+.page h2{font-size:clamp(1.3rem,5.5vw,1.9rem);line-height:1.15;color:var(--roxo);margin-bottom:1.1rem;outline:none}
+.page p{margin:0 0 1rem;font-size:1.12rem;line-height:1.7;max-width:62ch}
+.page p.d{border-left:4px solid var(--verde);padding-left:.8rem}
+.page p.al{background:var(--carvao);color:var(--verde);font-family:var(--display);font-size:.95rem;padding:.7rem .9rem;border-radius:.4rem;line-height:1.4}
+.page p.lei{background:#fff3e0;border:2px dashed var(--laranja);padding:.5rem .8rem;border-radius:.4rem}
+.page p.nota{font-size:.98rem;background:#e9dfcd;padding:.7rem .9rem;border-radius:.4rem}
+.page p.fim{font-family:var(--display);font-size:1.15rem;color:var(--laranja);margin-top:1.4rem}
+.page p.cit{font-style:italic;font-size:1.2rem;text-align:center;padding:.4rem .6rem}
+.rv{animation:in .5s both}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.esc{font-family:var(--display);color:var(--roxo);margin:1.6rem 0 .6rem;font-size:1.05rem}
+.opts{display:flex;flex-direction:column;gap:.7rem}
+.opt{width:100%;text-align:left;background:var(--laranja);color:var(--carvao);border:3px solid var(--carvao);border-radius:.6rem;padding:.9rem 1rem;font-size:1.05rem;line-height:1.45;font-weight:600;min-height:3.25rem;box-shadow:0 4px 0 var(--carvao)}
+.opt:hover{background:#ff8c3a}.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--carvao)}
+.opt.go{background:var(--verde);text-align:center;font-family:var(--display);font-weight:400}
+.epi{margin-top:1.8rem;padding-top:1.2rem;border-top:3px dashed var(--roxo)}
+.actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.6rem}
+.actions .opt{flex:1 1 14rem;text-align:center}
+.alt{background:var(--roxo);color:var(--creme)}.alt:hover{background:#613f78}
+.live{min-height:1.4rem;margin-top:.7rem;font-size:.95rem;color:var(--roxo);font-weight:600}
+.gap{background:#fff3e0;border:3px dashed var(--laranja);border-radius:.5rem;padding:1rem;font-family:system-ui,sans-serif;font-size:1rem;line-height:1.5}
+@media(prefers-reduced-motion:reduce){.rv{animation:none}.bar i{transition:none}*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+/* ============================================================
+   DADOS DA HISTÓRIA (texto original, não editar a narrativa)
+   ============================================================ */
+const COVER = {
+  kicker: 'TAVERNA DOS JOGUINS APRESENTA',
+  titulo: '🧟 O ÚLTIMO CORREDOR',
+  subtitulo: 'Uma aventura zumbi na Taverna dos joguINS',
+  edicao: 'Um livro-jogo de Halloween: Santos Edition',
+  chamada: 'Em Santos, até o apocalipse vem acompanhado de umidade, trânsito e uma chance de chuva.'
+};
+
+const STORY = {
+pro: {
+  title: 'PRÓLOGO — OFERTA IMPERDÍVEL',
+  p: [
+`Era uma noite comum em Santos. O vento soprava do mar, os boletos venciam e os amiguins da Taverna dos joguINS discutiam assuntos de extrema importância, como qual jogo merecia GOTY e por que todo mundo parecia ter esquecido de responder no grupo.`,
+`Até que um alerta interrompeu a paz:`,
+`URGENTE: SURTO DE VÍRUS ZUMBI NA BAIXADA SANTISTA. EVITEM AGLOMERAÇÕES.`,
+`Naturalmente, a primeira reação dos amiguins foi abrir o grupo da Taverna. A segunda foi descobrir que o apocalipse havia começado justamente no supermercado Atacadão da região, onde metade da cidade parecia ter decidido fazer compras naquela mesma noite.`,
+`A terceira foi perceber que vocês estavam lá dentro.`,
+`Entre os sobreviventes estavam o Mago do Pix, especialista em soluções financeiras duvidosas; a Capivara Tática, que parecia conhecer todos os mapas de todos os jogos; o Goblin do Estoque, que tinha desaparecido havia vinte minutos e ninguém sabia por quê; a NPC de Fundo, que aparecia nos momentos mais improváveis; e o Cavaleiro do Lag, que demorava tanto para reagir que talvez o vírus zumbi nem conseguisse alcançá-lo.`,
+`Outros amiguins também estavam espalhados pelos corredores, cada qual com uma habilidade questionável e um nível de preparo emocional incompatível com a situação.`,
+`No alto-falante, uma voz anunciou:`,
+`— Atenção, clientes. Devido a um pequeno incidente biológico, informamos que o setor de congelados está temporariamente indisponível. Agradecemos a compreensão.`,
+`Um zumbi de colete vermelho surgiu empurrando um carrinho de compras. Ele olhou para vocês. Vocês olharam para ele.`,
+`O Cavaleiro do Lag tentou abrir o menu de pausa e não funcionou.`,
+`Foi então que Patrick e Loisi, os xerifins oficiais da Taverna, assumiram o comando.`,
+`— Amiguins, calma! — anunciou Patrick, segurando uma embalagem de pão de alho como se fosse um cetro real.`,
+`— Ninguém vai virar jantar de ninguém hoje — completou Loisi. — E, por favor, parem de tentar pagar as compras no caixa automático. O sistema está fora do ar!`,
+`O apocalipse tinha começado e vocês precisavam tomar uma decisão.`,
+`COMO JOGAR: Leia cada trecho e escolha uma opção. Os números indicam para qual trecho você deve ir. Não vale trapacear, consultar detonados ou culpar o mestre quando der tudo errado.`
+  ],
+  next: '1'
+},
+'1': {
+  title: '1. O TUTORIAL QUE NINGUÉM PEDIU',
+  p: [
+`Vocês se reúnem perto das prateleiras de arroz. Do outro lado do corredor, uma horda de zumbis vaga lentamente, aparentemente procurando cérebros ou, talvez, o funcionário responsável por repor o papel higiênico.`,
+`A Capivara Tática examina o ambiente.`,
+`— Temos três possibilidades: achar uma saída, investigar os produtos para descobrir uma cura ou transformar esse estabelecimento num território independente.`,
+`— Eu voto em ir embora — diz a NPC de Fundo.`,
+`— Eu voto em saquear o setor de chocolates — diz o Goblin do Estoque.`,
+`— Eu voto em não morrer — diz alguém que ninguém viu chegar.`,
+`Patrick e Loisi concordam que vocês precisam de um plano.`
+  ],
+  choices: [
+    { t: `Se vocês querem explorar o supermercado e procurar suprimentos para escapar, vão para o 2.`, to: '2' },
+    { t: `Se preferem investigar a origem do vírus e procurar ingredientes para uma cura, vão para o 3.`, to: '3' },
+    { t: `Se preferem transformar o supermercado num território independente e fundar uma república, vão para o 7.`, to: '7' }
+  ]
+},
+'2': {
+  title: '2. O SETOR DE UTILIDADES PÚBLICAS',
+  p: [
+`A equipe avança pelos corredores usando carrinhos de compras como barricadas móveis. A Capivara Tática assume a liderança, enquanto o Cavaleiro do Lag fica para trás porque esbarrou numa promoção de pilhas.`,
+`Vocês encontram um grupo de zumbis particularmente estranho: eles não estão tentando atacar ninguém, mas sim reunidos em torno de uma televisão que exibe uma propaganda de margarina.`,
+`— Será que eles ainda têm consciência? — pergunta o Mago do Pix.`,
+`— Ou será que a propaganda é simplesmente irresistível? — responde a NPC de Fundo.`,
+`Para distrair a horda, o Goblin do Estoque propõe um plano: construir um exército de galinhas. Ninguém sabe de onde ele tirou as galinhas, mas ninguém pergunta.`,
+`Em poucos minutos, uma dúzia de aves ocupa o corredor, cacarejando com a confiança de quem acabou de conquistar um território. E os zumbis? Ficam hipnotizados.`,
+`Vocês aproveitam a oportunidade para chegar à seção de bebidas, onde encontram uma saída de emergência sinalizada por uma placa quase inteiramente coberta por um cartaz de promoção. Mas há um problema: a porta está trancada por dentro, e a chave parece estar no balcão de atendimento.`
+  ],
+  choices: [
+    { t: `Mandar uma equipe furtiva recuperar a chave enquanto o resto distrai os zumbis com as galinhas. Vão para o 4.`, to: '4' },
+    { t: `Abandonar o plano de fuga por enquanto e procurar outro caminho pelo depósito. Vão para o 5.`, to: '5' }
+  ]
+},
+'3': {
+  title: '3. O LABORATÓRIO DA GÔNDOLA 7',
+  p: [
+`Enquanto parte dos amiguins discute estratégias, a NPC de Fundo encontra uma notícia aberta num computador abandonado do setor administrativo.`,
+`O vírus zumbi começou depois que um lote experimental de suplemento alimentar foi misturado acidentalmente a uma bebida energética. O produto, chamado ZumbiMax Ultra Turbo, prometia disposição, foco e produtividade por até 72 horas. Pelo visto, a promessa foi levada a sério demais.`,
+`A notícia também menciona que a fórmula pode ser neutralizada por uma combinação de ingredientes alimentícios e compostos presentes em produtos comuns de supermercado. A composição exata, porém, não foi divulgada.`,
+`— Então a cura está aqui dentro? — pergunta Patrick.`,
+`— Tecnicamente, tudo está aqui dentro — responde Loisi. — Inclusive os problemas.`,
+`Vocês começam a recolher produtos para investigar. Encontram vinagre, limões, água de coco, gelatina, três pacotes de macarrão instantâneo e um pote de maionese cuja data de validade parece anteceder a fundação da cidade.`,
+`O Mago do Pix segura o pote com reverência.`,
+`— Esse aqui é perigoso até para os vivos.`,
+`Nesse momento, um entregador de pizza entra pela doca de recebimento. Ele está usando capacete, segurando duas pizzas e olhando para o celular.`,
+`— Boa noite. Pedido para... Taverna dos joguINS?`,
+`O silêncio é absoluto.`,
+`— Eu só quero saber se alguém vai pagar a taxa de entrega — acrescenta ele.`,
+`O entregador pode conhecer uma rota de saída ou ter informações sobre o vírus. Mas ele também pode estar escondendo alguma coisa.`
+  ],
+  choices: [
+    { t: `Convencer o entregador a ajudar vocês a escapar usando sua moto e o conhecimento das ruas de Santos. Vão para o 5.`, to: '5' },
+    { t: `Investigar os produtos e montar um laboratório improvisado para tentar desenvolver a cura. Vão para o 6.`, to: '6' }
+  ]
+},
+'4': {
+  title: '4. A OPERAÇÃO GALINHA DE TROIA',
+  p: [
+`A missão começa com um plano elaborado por Patrick, revisado por Loisi e completamente ignorado por todos nos primeiros trinta segundos.`,
+`A Capivara Tática conduz as galinhas até o balcão. O Mago do Pix distrai o atendente zumbi oferecendo um cupom de desconto. A NPC de Fundo rasteja por baixo de uma esteira de caixa, embora ninguém tenha explicado por que ela escolheu justamente aquela.`,
+`O plano funciona e a chave é recuperada! Porém, no momento da fuga, uma galinha sobe no carrinho do Goblin do Estoque e cacareja.`,
+`COCÓRICÓ.`,
+`A horda inteira vira a cabeça.`,
+`O Cavaleiro do Lag tenta correr, mas seu cérebro ainda está processando a notificação de que o plano mudou. Vocês disparam pelos corredores, atravessam a saída de emergência e chegam ao estacionamento. Atrás de vocês, as galinhas conquistam o supermercado.`,
+`Patrick conta os amiguins e Loisi conta novamente; ninguém ficou para trás.`,
+`Na calçada, o entregador de pizza passa de moto e pergunta:`,
+`— Vocês querem carona? Estou indo para a orla.`,
+`O grupo olha para a cidade infestada, depois olha para a moto por último, olha para a pizza. A decisão parece óbvia.`
+  ],
+  next: 'f2'
+},
+'5': {
+  title: '5. O DEPÓSITO PROIBIDO',
+  p: [
+`Vocês chegam ao depósito, um território misterioso onde se acumulam caixas, paletes, produtos esquecidos e um número preocupante de ventiladores portáteis.`,
+`O entregador de pizza, que aparentemente decidiu acompanhar vocês porque ninguém pagou a taxa de entrega, aponta para uma porta lateral.`,
+`— Essa saída dá para a rua. Mas tem um detalhe.`,
+`— Qual? — pergunta Loisi.`,
+`— Tem um bando de patos na frente.`,
+`Todos ficam em silêncio.`,
+`— Patos? — pergunta Patrick.`,
+`— Patos.`,
+`Do lado de fora, dezenas de patos ocupam a calçada como uma milícia organizada. Alguns usam fitas amarelas nas patas e um deles parece até estar usando um crachá. Enquanto isso, a Capivara Tática observa a cena.`,
+`— Eles controlam a saída.`,
+`— Como você sabe? — pergunta o Mago do Pix.`,
+`— Porque aquele pato está cobrando pedágio.`,
+`O pato grasna e o entregador traduz:`,
+`— Ele quer duas pizzas, três pacotes de ração e o reconhecimento oficial da soberania do bando.`,
+`A negociação parece impossível, até que o Goblin do Estoque descobre um carrinho cheio de milho para pipoca, fazendo os patos entrarem em deliberação. Afinal, a diplomacia funciona melhor do que qualquer arma.`,
+`Enquanto isso, vocês descobrem uma sala refrigerada com uma saída para a área externa e um conjunto de produtos experimentais do ZumbiMax. Dentro da sala, o computador ainda está ligado. Há duas oportunidades diante de vocês: fugir imediatamente, aproveitando que os patos estão ocupados, ou permanecer para investigar a fórmula do vírus.`
+  ],
+  choices: [
+    { t: `Negociar a passagem com os patos e escapar pela área externa. Vão para o 8.`, to: '8' },
+    { t: `Usar o computador e os produtos experimentais para desenvolver uma possível cura. Vão para o 6.`, to: '6' },
+    { t: `Convencer os patos a se aliarem à Taverna e transformar o supermercado numa base de operações. Vão para o 7.`, to: '7' }
+  ]
+},
+'6': {
+  title: '6. A CURA DO SÉCULO (OU O PIOR SUCO DA HISTÓRIA)',
+  p: [
+`O laboratório improvisado está montado: a bancada é uma caixa de sabão em pó, o jaleco é um avental de churrasco e o microscópio é, na verdade, um binóculo que alguém encontrou na seção de camping. Mesmo assim, os amiguins estão determinados.`,
+`A NPC de Fundo cruza os dados do computador, o Mago do Pix calcula as proporções e a Capivara Tática organiza os ingredientes. Patrick e Loisi mantêm a equipe focada, embora um deles esteja tentando descobrir se a cura também funciona em boletos vencidos.`,
+`Depois de muita pesquisa, vocês encontram a combinação correta descrita nos registros do fabricante e os ingredientes necessários estão disponíveis no supermercado.`,
+`Agora o processo exige três etapas: separar os compostos neutralizantes, preparar o antídoto e testá-lo numa amostra do vírus mantida num recipiente lacrado.`,
+`O primeiro teste é um sucesso e o segundo também. Já no terceiro, o Cavaleiro do Lag esbarra na bancada e derruba um copo de suco de limão dentro de uma tigela de gelatina.`,
+`Todos congelam quando o computador apita.`,
+`RESULTADO: ATIVIDADE VIRAL NEUTRALIZADA.`,
+`— EU SABIA! — grita o Mago do Pix.`,
+`— Você literalmente apostou no pote de maionese — responde Loisi.`,
+`O entregador de pizza ergue a mão.`,
+`— Só uma dúvida. A cura funciona em quem já está infectado?`,
+`A equipe consulta os registros. A resposta é sim, desde que o antídoto seja preparado na concentração correta e administrado conforme as instruções do protocolo.`,
+`Vocês têm tudo de que precisam para salvar os zumbis da Baixada Santista. Mas a operação ainda exige coragem, organização e uma quantidade industrial de copinhos descartáveis.`
+  ],
+  choices: [
+    { t: `Vão para o 9.`, to: '9', go: true }
+  ]
+},
+'7': {
+  title: '7. A REPÚBLICA DOS AMIGUINS',
+  p: [
+`Vocês chegam a uma conclusão: fugir é uma solução temporária, e a cura ainda é uma hipótese. O mundo precisa de algo mais sólido, como uma estrutura política, um sistema econômico, uma máfia.`,
+`— Uma máfia? — pergunta Patrick.`,
+`— Uma máfia — confirma o Goblin do Estoque. — Toda sociedade precisa de alguém que controle o estoque de papel higiênico.`,
+`Loisi cruza os braços.`,
+`— Se vamos fazer isso, pelo menos teremos regras.`,
+`Ao redor, o supermercado inteiro parece concordar: as galinhas cacarejam em assembleia, os patos de crachá aguardam na calçada com cara de quem já está cobrando pedágio e o entregador de pizza continua esperando que alguém pague a taxa de entrega.`,
+`Nasce assim a República Independente da Taverna dos joguINS, com sede no depósito do supermercado, território que inclui o estacionamento, a seção de congelados e uma área disputada pelos patos.`,
+`Patrick e Loisi assumem a xerifia suprema. A Capivara Tática vira ministra da Defesa e dos Mapas. O Mago do Pix cuida da economia. O Goblin do Estoque administra os recursos. A NPC de Fundo recebe o Ministério das Aparições Inesperadas.`,
+`Os demais amiguins ocupam cargos de igual importância, inclusive o Ministério dos Memes e a Secretaria de Reclamações sobre Loot.`,
+`A máfia oficial recebe o nome de Família do Carrinho Preto. Sua missão é proteger as rotas de abastecimento, negociar com comunidades vizinhas e impedir que os zumbis tomem os corredores comerciais.`,
+`As galinhas ficam responsáveis pela vigilância aérea — embora raramente voem. Os patos controlam a fronteira da calçada, cobrando pedágio em milho. O entregador de pizza vira embaixador das relações internacionais, porque é o único que conhece todas as rotas da cidade.`,
+`A primeira lei da República é aprovada por unanimidade:`,
+`Artigo 1º — Nenhum amiguin será obrigado a compartilhar loot lendário.`,
+`A segunda lei é mais controversa:`,
+`Artigo 2º — Toda reunião oficial deve incluir pizza.`,
+`A terceira lei é escrita por Loisi:`,
+`Artigo 3º — É proibido transformar a reunião de planejamento em discussão sobre qual jogo é melhor.`,
+`Essa última lei dura exatamente onze minutos.`
+  ],
+  choices: [
+    { t: `Vão para o 10.`, to: '10', go: true }
+  ]
+},
+'8': {
+  title: '8. O ÊXODO DOS PATOS',
+  p: [
+`A negociação com os patos chega ao fim quando o pato de crachá aceita a oferta de milho e duas pizzas.`,
+`O entregador protesta.`,
+`— Eu vou sair no prejuízo!`,
+`— Pense pelo lado positivo — diz Patrick. — Você acabou de estabelecer relações diplomáticas com uma espécie não humana.`,
+`— Eu só queria entregar uma calabresa.`,
+`Os patos abrem passagem e vocês atravessam a rua para chegar a um ponto seguro, longe do supermercado e da horda.`,
+`A cidade continua em caos, mas vocês conseguiram escapar sem perder nenhum amiguin. O Cavaleiro do Lag chega alguns segundos depois, porque estava tentando salvar o progresso de um jogo no celular.`,
+`Vocês se abrigam num local seguro e começam a planejar os próximos passos. O entregador finalmente consegue entregar a pizza, embora ninguém saiba quem fez o pedido.`,
+`A Taverna sobreviveu. O mundo, nem tanto.`
+  ],
+  next: 'f2'
+},
+'9': {
+  title: '9. A VACINA DO CAOS',
+  p: [
+`A equipe volta à bancada e segue o protocolo encontrado nos registros do fabricante. Após separar os compostos e preparar o antídoto na concentração correta, vocês testam a fórmula com o equipamento de análise disponível no laboratório.`,
+`O resultado é positivo.`,
+`O antídoto neutraliza o vírus.`,
+`Não há explosões, mutações horríveis nem ninguém virando uma criatura de tentáculos. Só um líquido de cor suspeita, um computador apitando e Patrick perguntando se aquilo tem gosto de isotônico.`,
+`Vocês preparam um lote piloto e o entregador de pizza ajuda a levar as primeiras doses até um grupo de zumbis no estacionamento. A aplicação transforma os infectados de volta em pessoas normais, embora alguns continuem andando devagar e emitindo sons estranhos.`,
+`— Esses aí já eram assim antes — observa Loisi.`,
+`A notícia se espalha pela Baixada Santista. Em pouco tempo, equipes de resgate chegam ao supermercado, recuperam os sobreviventes e distribuem o antídoto.`,
+`O surto é controlado.`,
+`As galinhas são retiradas do setor de congelados. Os patos recebem uma medalha diplomática. O entregador finalmente recebe o pagamento pela pizza.`,
+`A Taverna dos joguINS entra para a história como a comunidade gamer que salvou Santos usando trabalho em equipe, raciocínio lógico e produtos de supermercado.`,
+`O Mago do Pix tenta patentear a cura.`,
+`Patrick e Loisi impedem a ideia antes que vire uma NFT.`
+  ],
+  next: 'f3'
+},
+'10': {
+  title: '10. A NOVA ORDEM MUNDIAL (COM TAXA DE PEDÁGIO)',
+  p: [
+`Três semanas após a fundação da República Independente da Taverna dos joguINS, a situação em Santos está... surpreendentemente organizada.`,
+`O depósito do supermercado virou o Palácio Presidencial. O antigo setor de hortifrúti abriga o Parlamento, onde os amiguins discutem questões fundamentais para a reconstrução da civilização, como a distribuição de loot, o preço do miojo e se é permitido expulsar alguém da República por escolher jogo ruim no multiplayer.`,
+`Patrick e Loisi continuam como xerifins supremos, responsáveis por manter a ordem e impedir que as reuniões oficiais terminem em guerras de opiniões. O trabalho não é fácil: na última assembleia, três amiguins quase iniciaram um conflito diplomático porque alguém chamou um remaster de remake.`,
+`Enquanto isso, a Família do Carrinho Preto prospera.`,
+`A organização controla as rotas de abastecimento, protege os estoques de comida e negocia com outras comunidades sobreviventes. Seu símbolo oficial é um carrinho de compras preto com duas rodas tortas, e seu lema é simples:`,
+`**“Respeite o loot, pague o pedágio e não mexa no último pacote de bolacha.”**`,
+`As galinhas patrulham o estacionamento em formação militar. O treinamento ainda apresenta alguns problemas, principalmente porque elas se distraem sempre que alguém deixa cair milho no chão. Mesmo assim, nenhuma horda de zumbis conseguiu ultrapassar a linha de defesa avícola.`,
+`Os patos, por sua vez, tornaram-se parceiros comerciais da República. Em troca de milho, eles garantem a segurança das rotas próximas à orla e cobram pedágio de qualquer pessoa que tente passar sem apresentar a documentação adequada.`,
+`O pato de crachá foi nomeado ministro das Relações Exteriores.`,
+`Ninguém sabe exatamente como funciona a burocracia diplomática de um pato, mas os resultados são inegáveis: as negociações nunca atrasam, os documentos são carimbados com eficiência e ninguém tem coragem de questionar suas decisões.`,
+`O entregador de pizza também encontrou seu lugar na nova sociedade. Como único cidadão capaz de atravessar a cidade sem se perder, ele assumiu o cargo de embaixador itinerante. Sua moto virou patrimônio nacional, e as pizzas passaram a ser consideradas um recurso estratégico de segurança alimentar.`,
+`Certa manhã, porém, uma notícia interrompe a tranquilidade da República.`,
+`Uma horda de zumbis foi vista se aproximando do supermercado. O grupo parece estar seguindo o cheiro de comida e, segundo a Capivara Tática, pode alcançar os portões antes do anoitecer.`,
+`Patrick convoca uma reunião de emergência.`,
+`— Amiguins, precisamos decidir como vamos proteger nossa República.`,
+`Loisi abre o mapa de Santos sobre uma mesa improvisada.`,
+`— Podemos organizar uma distração com as galinhas, negociar com os patos ou simplesmente trancar os portões e fingir que não estamos em casa.`,
+`O Mago do Pix levanta a mão.`,
+`— E se cobrarmos ingresso dos zumbis? Podemos financiar a reconstrução.`,
+`— Eles não têm cérebro suficiente para entender o sistema tributário — responde a NPC de Fundo.`,
+`— Ótimo. Então podemos lançar uma moeda digital.`,
+`Patrick fecha os olhos por alguns segundos. Loisi finge não conhecer ninguém naquela sala.`,
+`Apesar do caos, os amiguins conseguem organizar as defesas, proteger o estoque e conduzir os zumbis para longe da base usando uma combinação de distrações, música de elevador e uma promoção fictícia de pão de alho.`,
+`A operação é um sucesso.`,
+`Ao anoitecer, a República está segura. As galinhas voltam aos seus postos, os patos recebem sua comissão em milho e o entregador de pizza estaciona a moto em frente ao Palácio Presidencial.`,
+`Patrick ergue uma embalagem de pão de alho.`,
+`— À República dos Amiguins!`,
+`Loisi ergue uma caixa de pizza.`,
+`— À Família do Carrinho Preto!`,
+`Todos comemoram.`,
+`O Cavaleiro do Lag levanta o copo alguns segundos depois, porque a animação ainda não terminou de carregar.`
+  ],
+  next: 'f4'
+},
+f4: {
+  ending: true, n: 4,
+  title: 'FIM — A REPÚBLICA DOS AMIGUINS',
+  p: [
+`Os zumbis continuam existindo, Santos ainda precisa ser reconstruída e a humanidade está longe de voltar ao normal. Mas os amiguins agora têm uma nação, uma organização de proteção, relações diplomáticas com os patos e um sistema de distribuição de pizza relativamente eficiente.`,
+`A República Independente da Taverna dos joguINS entra para a história como a primeira potência mundial fundada dentro de um supermercado durante um apocalipse zumbi.`,
+`A Família do Carrinho Preto se torna uma lenda. Há quem diga que controla toda a Baixada Santista. Outros afirmam que seu verdadeiro poder está no acesso exclusivo ao estoque de papel higiênico.`,
+`E, apesar de todas as crises, uma regra permanece inviolável:`,
+`**Nenhum amiguin será deixado para trás. Nenhum loot lendário será confiscado. E nenhuma reunião oficial começará sem pizza.**`,
+`Até que, numa noite tranquila, uma mensagem aparece no grupo da Taverna:`,
+`*“Amiguins, alguém sabe quem ficou responsável por pagar a internet da República?”*`,
+`Patrick e Loisi se entreolham.`,
+`O apocalipse, afinal, nunca foi o maior dos problemas.`,
+`**FIM.**`
+  ]
+},
+f2: {
+  ending: true, n: 2,
+  title: 'FIM — A FUGA MAIS SANTISTA DO MUNDO',
+  p: [
+`Vocês escaparam de zumbis, negociaram com patos e descobriram que o verdadeiro poder sempre esteve na amizade — e no milho de pipoca.`,
+`As galinhas continuam reinando no supermercado, a República dos Amiguins ainda não existe e a cura ainda não foi descoberta. Mas vocês estão vivos, com pizza e histórias suficientes para alimentar o grupo por meses.`,
+`Até que alguém pergunta:`,
+`“Amiguins, quem ficou com o código do Wi-Fi?”`,
+`FIM.`
+  ]
+},
+f3: {
+  ending: true, n: 3,
+  title: 'FIM — A CURA DOS JOGUINS',
+  p: [
+`A humanidade foi salva, os amiguins sobreviveram e ninguém precisou abandonar a campanha no meio.`,
+`A única sequela permanente foi a desconfiança coletiva em relação a bebidas energéticas.`,
+`E, a partir daquele dia, sempre que alguém perguntava se os amiguins estavam preparados para qualquer situação, a resposta era:`,
+`“Depende. Tem galinhas?”`,
+`FIM.`
+  ]
+}
+};
+
+const EPILOGO = {
+  title: 'EPÍLOGO — A TAVERNA NUNCA FECHA',
+  p: [
+`Independentemente do final que você alcançou, uma coisa é certa: a Taverna dos joguINS sobreviveu ao apocalipse.`,
+`Talvez vocês tenham fugido. Talvez tenham salvado a humanidade. Talvez tenham fundado uma república e uma máfia com apoio diplomático de patos.`,
+`Mas, em todas as linhas do tempo, os xerifins Patrick e Loisi continuam moderando o grupo, os amiguins continuam discutindo e alguém continua mandando mensagem fora de contexto.`,
+`O mundo pode acabar.`,
+`O servidor pode cair.`,
+`Os zumbis podem dominar Santos.`,
+`Mas a Taverna dos joguINS permanece.`,
+`Feliz Halloween, amiguins.`,
+`E lembrem-se: em caso de apocalipse zumbi, mantenham a calma, protejam o loot e nunca confiem num pato de crachá.`
+  ]
+};
+
+/* ============================================================
+   INTERFACE
+   ============================================================ */
+const app = document.getElementById('app');
+const TOTAL_STEPS = 7; // extensão aproximada do caminho mais longo (pró, 1, 3, 6, 9, final)
+let cur = null, hist = [], steps = 0;
+
+function validate() {
+  const bad = [];
+  Object.entries(STORY).forEach(([id, n]) => {
+    (n.choices || []).forEach(c => { if (!STORY[c.to]) bad.push(id + ' → ' + c.to); });
+    if (n.next && !STORY[n.next]) bad.push(id + ' → ' + n.next);
+  });
+  if (bad.length) console.warn('Destinos inexistentes no texto fornecido:', bad.join(', '));
+  return bad;
+}
+validate();
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+function pClass(t) {
+  if (/^(URGENTE|RESULTADO):/.test(t)) return 'al';
+  if (/^Artigo \d/.test(t)) return 'lei';
+  if (/^COMO JOGAR:/.test(t)) return 'nota';
+  if (/^FIM\.$/.test(t)) return 'fim';
+  if (/^(FON-FON|COCÓRICÓ)\.$/.test(t)) return 'al';
+  if (/^“/.test(t)) return 'cit';
+  if (/^—/.test(t)) return 'd';
+  return '';
+}
+function rich(p, t) {
+  t.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/).forEach(s => {
+    if (!s) return;
+    if (s.startsWith('**')) p.appendChild(el('strong', null, s.slice(2, -2)));
+    else if (s.startsWith('*')) p.appendChild(el('em', null, s.slice(1, -1)));
+    else p.appendChild(document.createTextNode(s));
+  });
+}
+function addParas(box, list, startDelay) {
+  list.forEach((t, i) => {
+    const p = el('p', 'rv ' + pClass(t.replace(/\*/g, '')));
+    rich(p, t);
+    p.style.animationDelay = (startDelay + Math.min(i, 14) * 70) + 'ms';
+    box.appendChild(p);
+  });
+  return startDelay + Math.min(list.length, 14) * 70;
+}
+function finish() { window.scrollTo(0, 0); const h = app.querySelector('[data-focus]'); if (h) h.focus({ preventScroll: true }); }
+
+function renderCover() {
+  app.innerHTML = '';
+  const c = el('section', 'cover');
+  c.appendChild(el('span', 'kicker', COVER.kicker));
+  const sign = el('div', 'sign');
+  const h1 = el('h1', null, COVER.titulo); h1.tabIndex = -1; h1.dataset.focus = '1';
+  sign.appendChild(h1);
+  sign.appendChild(el('p', null, COVER.subtitulo));
+  c.appendChild(sign);
+  c.appendChild(el('div', 'edition', COVER.edicao));
+  c.appendChild(el('p', 'tag', COVER.chamada));
+  const d = el('div', 'deco', '🐔🦆🍕🛒'); d.setAttribute('aria-hidden', 'true');
+  c.appendChild(d);
+  const b = el('button', 'cta', 'SOBREVIVER');
+  b.onclick = () => { hist = []; steps = 0; show('pro', false); };
+  c.appendChild(b);
+  c.appendChild(el('div', 'dur', 'Duração aproximada: 10 a 15 minutos'));
+  app.appendChild(c);
+  finish();
+}
+
+function topBar() {
+  const t = el('div', 'top');
+  const back = el('button', 'ghost', '← Voltar');
+  back.onclick = goBack;
+  const pr = el('div', 'prog');
+  const lab = el('span', null, 'Passo ' + steps);
+  const bar = el('div', 'bar'); const i = el('i');
+  i.style.width = Math.min(100, Math.round(steps / TOTAL_STEPS * 100)) + '%';
+  bar.appendChild(i); pr.append(lab, bar);
+  pr.setAttribute('role', 'progressbar'); pr.setAttribute('aria-valuemin', '0'); pr.setAttribute('aria-valuemax', String(TOTAL_STEPS)); pr.setAttribute('aria-valuenow', String(Math.min(steps, TOTAL_STEPS)));
+  pr.setAttribute('aria-label', 'Progresso da leitura');
+  t.append(back, pr);
+  return t;
+}
+
+function show(id, push = true) {
+  if (push && cur) { hist.push(cur); }
+  cur = id; steps = hist.length + 1;
+  render();
+}
+function goBack() {
+  if (hist.length) { cur = hist.pop(); steps = hist.length + 1; render(); }
+  else { cur = null; renderCover(); }
+}
+
+function render() {
+  if (cur == null) return renderCover();
+  const n = STORY[cur];
+  app.innerHTML = '';
+  app.appendChild(topBar());
+  const page = el('article', 'page');
+  if (!n) {
+    const h = el('h2', null, 'Trecho ' + cur); h.tabIndex = -1; h.dataset.focus = '1';
+    page.appendChild(h);
+    page.appendChild(el('p', 'gap', 'O texto do trecho ' + cur + ' não consta no livro-jogo fornecido. Use “Voltar” para escolher outro caminho.'));
+    app.appendChild(page); return finish();
+  }
+  const h = el('h2', null, n.title); h.tabIndex = -1; h.dataset.focus = '1';
+  page.appendChild(h);
+  let delay = addParas(page, n.p, 100);
+
+  if (n.ending) {
+    const epi = el('div', 'epi');
+    epi.appendChild(el('h2', null, EPILOGO.title));
+    epi.lastChild.style.fontSize = '1.25rem'; epi.lastChild.style.marginBottom = '1rem';
+    addParas(epi, EPILOGO.p, delay + 200);
+    page.appendChild(epi);
+    const acts = el('div', 'actions');
+    const again = el('button', 'opt go', 'Jogar novamente');
+    again.onclick = () => { hist = []; cur = null; steps = 0; renderCover(); };
+    const share = el('button', 'opt alt', 'Copiar meu final para o grupo');
+    const live = el('div', 'live'); live.setAttribute('role', 'status'); live.setAttribute('aria-live', 'polite');
+    share.onclick = () => copiar(`Cheguei ao ${n.title} em “O Último Corredor”, o livro-jogo da Taverna dos joguINS! Conseguem chegar a um final diferente? ${location.href}`, live);
+    acts.append(again, share);
+    page.append(acts, live);
+  } else {
+    const box = el('div');
+    box.style.animation = 'in .5s both'; box.style.animationDelay = (delay + 150) + 'ms';
+    if (n.next) {
+      const o = el('div', 'opts');
+      const b = el('button', 'opt go', 'Continuar');
+      b.onclick = () => show(n.next);
+      o.appendChild(b); box.appendChild(o);
+    } else if (n.choices) {
+      const only = n.choices.length === 1 && n.choices[0].go;
+      if (!only) box.appendChild(el('div', 'esc', 'Escolha:'));
+      const o = el('div', 'opts');
+      n.choices.forEach(c => {
+        const b = el('button', 'opt' + (c.go ? ' go' : ''), c.t);
+        b.onclick = () => show(c.to);
+        o.appendChild(b);
+      });
+      box.appendChild(o);
+    }
+    page.appendChild(box);
+  }
+  app.appendChild(page);
+  finish();
+}
+
+function copiar(txt, live) {
+  const ok = () => { live.textContent = 'Final copiado! Cole no grupo da Taverna.'; };
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let done = false;
+    try { done = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    live.textContent = done ? 'Final copiado! Cole no grupo da Taverna.' : 'Não foi possível copiar automaticamente. Selecione e copie: ' + txt;
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, fallback);
+  else fallback();
+}
+
+renderCover();
+</script>
+</body>
+</html>
